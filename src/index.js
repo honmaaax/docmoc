@@ -2,6 +2,7 @@ import program from 'commander'
 import fs from 'fs'
 import Promise from 'bluebird'
 import _ from 'lodash'
+import moment from 'moment'
 import yaml from 'js-yaml'
 import Chance from 'chance'
 import express from 'express'
@@ -60,7 +61,28 @@ function generateMockBody(definitions, schema) {
       return generateMockBody(definitions, schema.items)
     })
   } else if ( _.get(schema, 'type') === 'string' ) {
-    return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+    switch (schema.format) {
+      case 'date':
+        return moment(chance.date()).format('YYYY-MM-DD')
+      case 'date-time':
+        return `${moment(chance.date()).format('YYYY-MM-DDThh:mm:ss')}Z`
+      case 'byte':
+        return (new Buffer(chance.string(), 'binary')).toString('base64')
+      // case 'binary': // [TODO]
+      //   return new Buffer(chance.string(), 'binary')
+      case 'email':
+        return chance.email()
+      case 'uuid':
+        return chance.guid({version: 1})
+      case 'hostname':
+        return chance.domain()
+      case 'ipv4':
+        return chance.ip()
+      case 'ipv6':
+        return chance.ipv6()
+      default:
+        return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+    }
   } else if ( _.get(schema, 'type') === 'number' ) {
     return chance.floating({ min: schema.minimum, max: schema.maximum })
   } else if ( _.get(schema, 'type') === 'integer' ) {

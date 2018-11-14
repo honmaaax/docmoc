@@ -82,7 +82,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -119,28 +119,34 @@ module.exports = require("fs");
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = require("js-yaml");
+module.exports = require("moment");
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("chance");
+module.exports = require("js-yaml");
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("chance");
 
 /***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
-module.exports = require("swagger-express-middleware");
+module.exports = require("express");
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("swagger-express-middleware");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -153,16 +159,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bluebird__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(0);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
-/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(js_yaml__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
-/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(chance__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(swagger_ui_express__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8);
-/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
+/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(js_yaml__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
+/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(chance__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8);
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(3);
+/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(swagger_ui_express__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9);
+/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9__);
 
 
 
@@ -173,8 +181,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const chance = new chance__WEBPACK_IMPORTED_MODULE_5___default.a()
-const app = express__WEBPACK_IMPORTED_MODULE_6___default()()
+
+const chance = new chance__WEBPACK_IMPORTED_MODULE_6___default.a()
+const app = express__WEBPACK_IMPORTED_MODULE_7___default()()
 commander__WEBPACK_IMPORTED_MODULE_0___default.a
   .usage('<swagger_file_path>')
   .arguments('<swagger_file_path>')
@@ -182,12 +191,12 @@ commander__WEBPACK_IMPORTED_MODULE_0___default.a
 const filePath = (commander__WEBPACK_IMPORTED_MODULE_0___default.a.args && commander__WEBPACK_IMPORTED_MODULE_0___default.a.args[0]) || './swagger.yml'
 
 bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_MODULE_1___default.a.readFile)(filePath, 'utf-8')
-  .then(js_yaml__WEBPACK_IMPORTED_MODULE_4___default.a.safeLoad)
+  .then(js_yaml__WEBPACK_IMPORTED_MODULE_5___default.a.safeLoad)
   .then((swaggerDocument)=>{
     if ( !lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isObject(swaggerDocument) ) throw new Error('Invalid File')
-    app.use('/docs', swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default.a.serve, swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default.a.setup(swaggerDocument))
+    app.use('/docs', swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default.a.serve, swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default.a.setup(swaggerDocument))
   })
-  .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8___default.a)(filePath, app))
+  .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default.a)(filePath, app))
   .then((middleware)=>{
     app.use(
       middleware.metadata(),
@@ -225,7 +234,28 @@ function generateMockBody(definitions, schema) {
       return generateMockBody(definitions, schema.items)
     })
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'string' ) {
-    return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+    switch (schema.format) {
+      case 'date':
+        return moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DD')
+      case 'date-time':
+        return `${moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DDThh:mm:ss')}Z`
+      case 'byte':
+        return (new Buffer(chance.string(), 'binary')).toString('base64')
+      // case 'binary': // [TODO]
+      //   return new Buffer(chance.string(), 'binary')
+      case 'email':
+        return chance.email()
+      case 'uuid':
+        return chance.guid({version: 1})
+      case 'hostname':
+        return chance.domain()
+      case 'ipv4':
+        return chance.ip()
+      case 'ipv6':
+        return chance.ipv6()
+      default:
+        return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+    }
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'number' ) {
     return chance.floating({ min: schema.minimum, max: schema.maximum })
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'integer' ) {
