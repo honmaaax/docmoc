@@ -82,14 +82,14 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = require("swagger-ui-express");
+module.exports = require("lodash");
 
 /***/ }),
 /* 1 */
@@ -101,19 +101,19 @@ module.exports = require("commander");
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("fs");
+module.exports = require("bluebird");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("bluebird");
+module.exports = require("swagger-ui-express");
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("lodash");
+module.exports = require("fs");
 
 /***/ }),
 /* 5 */
@@ -125,28 +125,44 @@ module.exports = require("js-yaml");
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("chance");
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("express");
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = require("swagger-express-middleware");
+
+/***/ }),
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var commander__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var commander__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(commander__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
 /* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bluebird__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(0);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 /* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(js_yaml__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(0);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(swagger_ui_express__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
+/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(chance__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3);
+/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(swagger_ui_express__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8);
+/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8__);
 
 
 
@@ -155,22 +171,71 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+const chance = new chance__WEBPACK_IMPORTED_MODULE_5___default.a()
+const app = express__WEBPACK_IMPORTED_MODULE_6___default()()
 commander__WEBPACK_IMPORTED_MODULE_0___default.a
   .usage('<swagger_file_path>')
   .arguments('<swagger_file_path>')
   .parse(process.argv)
 const filePath = (commander__WEBPACK_IMPORTED_MODULE_0___default.a.args && commander__WEBPACK_IMPORTED_MODULE_0___default.a.args[0]) || './swagger.yml'
+
 bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_MODULE_1___default.a.readFile)(filePath, 'utf-8')
   .then(js_yaml__WEBPACK_IMPORTED_MODULE_4___default.a.safeLoad)
   .then((swaggerDocument)=>{
     if ( !lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isObject(swaggerDocument) ) throw new Error('Invalid File')
-    const app = express__WEBPACK_IMPORTED_MODULE_5___default()()
-    app.use('/docs', swagger_ui_express__WEBPACK_IMPORTED_MODULE_6___default.a.serve, swagger_ui_express__WEBPACK_IMPORTED_MODULE_6___default.a.setup(swaggerDocument))
+    app.use('/docs', swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default.a.serve, swagger_ui_express__WEBPACK_IMPORTED_MODULE_7___default.a.setup(swaggerDocument))
+  })
+  .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_8___default.a)(filePath, app))
+  .then((middleware)=>{
+    app.use(
+      middleware.metadata(),
+      middleware.CORS(),
+      middleware.files(),
+      middleware.parseRequest(),
+      middleware.validateRequest(),
+    )
+    app.use((req, res, next)=>{
+      const definitions = req.swagger.api.definitions
+      const schema = req.swagger.operation.responses[200].schema
+      console.log(definitions)
+      console.log(schema)
+      res.body = generateMockBody(definitions, schema)
+      next()
+    })
+    app.use(middleware.mock())
     app.get('/', (req, res) => {
       res.send('Hello!')
     })
     app.listen(3000, () => console.log('App listening on port 3000!'))
   })
+
+function generateMockBody(definitions, schema) {
+  if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, '$ref') ) {
+    const definition = definitions[schema.$ref]
+    return generateMockBody(definitions, definition)
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'object' ) {
+    return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.reduce(schema.properties, (obj, prop, name)=>{
+      return Object.assign({[name]: generateMockBody(definitions, prop)}, obj)
+    }, {})
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'array' ) {
+    const size = 3
+    return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.range(0, size).map(()=>{
+      return generateMockBody(definitions, schema.items)
+    })
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'string' ) {
+    return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'number' ) {
+    return chance.floating({ min: schema.minimum, max: schema.maximum })
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'integer' ) {
+    return chance.integer({ min: schema.minimum, max: schema.maximum })
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'boolean' ) {
+    return chance.bool()
+  }
+  // [TODO] allOf, oneOf, anyOf
+  return schema
+}
 
 
 /***/ })
