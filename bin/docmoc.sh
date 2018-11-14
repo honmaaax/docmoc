@@ -198,6 +198,7 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
   })
   .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default.a)(filePath, app))
   .then((middleware)=>{
+    console.log('middleware', middleware)
     app.use(
       middleware.metadata(),
       middleware.CORS(),
@@ -208,12 +209,33 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
     app.use((req, res, next)=>{
       const definitions = req.swagger.api.definitions
       const schema = req.swagger.operation.responses[200].schema
-      console.log(definitions)
-      console.log(schema)
       res.body = generateMockBody(definitions, schema)
       next()
     })
-    app.use(middleware.mock())
+    app.use(middleware.mock()[0])
+    app.use(middleware.mock()[1])
+    app.use(middleware.mock()[2])
+    app.use((req, res, next)=>{
+      if (res.swagger) {
+        if (res.swagger.isEmpty) {
+          res.send()
+        }
+        else {
+          switch (res.swagger.schema.type) {
+            case 'object':
+            case 'array':
+            case undefined:
+              res.json(res.body)
+              break
+            default:
+              res.send(res.body)
+          }
+        }
+      }
+      else {
+        next()
+      }
+    })
     app.get('/', (req, res) => {
       res.send('Hello!')
     })
@@ -240,9 +262,8 @@ function generateMockBody(definitions, schema) {
       case 'date-time':
         return `${moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DDThh:mm:ss')}Z`
       case 'byte':
+      case 'binary':
         return (new Buffer(chance.string(), 'binary')).toString('base64')
-      // case 'binary': // [TODO]
-      //   return new Buffer(chance.string(), 'binary')
       case 'email':
         return chance.email()
       case 'uuid':
