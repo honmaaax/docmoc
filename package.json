@@ -1,6 +1,6 @@
 {
   "name": "docmoc",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Documentation and Mock Server for Swagger",
   "main": "index.js",
   "repository": "https://github.com/honmaaax/docmoc",

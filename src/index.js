@@ -69,16 +69,16 @@ Promise.promisify(fs.readFile)(filePath, 'utf-8')
     app.listen(3000, () => console.log('App listening on port 3000!'))
   })
 
-function generateMockBody(definitions, schema) {
+function generateMockBody(definitions, schema, brothers) {
   if ( _.has(schema, '$ref') ) {
     const definition = definitions[schema.$ref]
     return generateMockBody(definitions, definition)
   } else if ( _.get(schema, 'type') === 'object' ) {
     return _.reduce(schema.properties, (obj, prop, name)=>{
-      return Object.assign({[name]: generateMockBody(definitions, prop)}, obj)
+      return Object.assign({[name]: generateMockBody(definitions, prop, schema.properties)}, obj)
     }, {})
   } else if ( _.get(schema, 'type') === 'array' ) {
-    const size = 3
+    const size = schema['x-mock-array-size'] || 1
     return _.range(0, size).map(()=>{
       return generateMockBody(definitions, schema.items)
     })
@@ -107,7 +107,12 @@ function generateMockBody(definitions, schema) {
   } else if ( _.get(schema, 'type') === 'number' ) {
     return chance.floating({ min: schema.minimum, max: schema.maximum })
   } else if ( _.get(schema, 'type') === 'integer' ) {
-    return chance.integer({ min: schema.minimum, max: schema.maximum })
+    const size = _.result(_.get(brothers, _.get(schema, 'x-mock-array-key')), 'x-mock-array-size')
+    if ( size ) {
+      return size
+    } else {
+      return chance.integer({ min: schema.minimum, max: schema.maximum })
+    }
   } else if ( _.get(schema, 'type') === 'boolean' ) {
     return chance.bool()
   }

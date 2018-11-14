@@ -242,16 +242,16 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
     app.listen(3000, () => console.log('App listening on port 3000!'))
   })
 
-function generateMockBody(definitions, schema) {
+function generateMockBody(definitions, schema, brothers) {
   if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, '$ref') ) {
     const definition = definitions[schema.$ref]
     return generateMockBody(definitions, definition)
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'object' ) {
     return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.reduce(schema.properties, (obj, prop, name)=>{
-      return Object.assign({[name]: generateMockBody(definitions, prop)}, obj)
+      return Object.assign({[name]: generateMockBody(definitions, prop, schema.properties)}, obj)
     }, {})
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'array' ) {
-    const size = 3
+    const size = schema['x-mock-array-size'] || 1
     return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.range(0, size).map(()=>{
       return generateMockBody(definitions, schema.items)
     })
@@ -280,7 +280,12 @@ function generateMockBody(definitions, schema) {
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'number' ) {
     return chance.floating({ min: schema.minimum, max: schema.maximum })
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'integer' ) {
-    return chance.integer({ min: schema.minimum, max: schema.maximum })
+    const size = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.result(lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(brothers, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'x-mock-array-key')), 'x-mock-array-size')
+    if ( size ) {
+      return size
+    } else {
+      return chance.integer({ min: schema.minimum, max: schema.maximum })
+    }
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'boolean' ) {
     return chance.bool()
   }
