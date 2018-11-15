@@ -83,6 +83,9 @@ function generateMockBody(definitions, schema, brothers) {
       return generateMockBody(definitions, schema.items)
     })
   } else if ( _.get(schema, 'type') === 'string' ) {
+    if ( _.has(schema, 'x-mock') ) {
+      return _.get(schema, 'x-mock')
+    }
     switch (schema.format) {
       case 'date':
         return moment(chance.date()).format('YYYY-MM-DD')

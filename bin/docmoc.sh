@@ -256,6 +256,9 @@ function generateMockBody(definitions, schema, brothers) {
       return generateMockBody(definitions, schema.items)
     })
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'string' ) {
+    if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'x-mock') ) {
+      return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'x-mock')
+    }
     switch (schema.format) {
       case 'date':
         return moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DD')
