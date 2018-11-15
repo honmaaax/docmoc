@@ -119,7 +119,19 @@ function generateMockBody(definitions, schema, brothers) {
     }
   } else if ( _.get(schema, 'type') === 'boolean' ) {
     return chance.bool()
+  } else if ( _.has(schema, 'allOf') ) {
+    switch (schema.allOf[0].type) {
+      case 'object':
+        return _.reduce(schema.allOf, (obj, values)=>{
+          return _.merge(obj, generateMockBody(definitions, values))
+        }, {})
+      default:
+        return generateMockBody(definitions, _.last(schema.allOf))
+    }
+  } else if ( _.has(schema, 'anyOf') ) {
+    return generateMockBody(definitions, _.sample(schema.anyOf))
+  } else if ( _.has(schema, 'oneOf') ) {
+    return generateMockBody(definitions, _.sample(schema.oneOf))
   }
-  // [TODO] allOf, oneOf, anyOf
   return schema
 }

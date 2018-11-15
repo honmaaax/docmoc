@@ -292,8 +292,20 @@ function generateMockBody(definitions, schema, brothers) {
     }
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'boolean' ) {
     return chance.bool()
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'allOf') ) {
+    switch (schema.allOf[0].type) {
+      case 'object':
+        return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.reduce(schema.allOf, (obj, values)=>{
+          return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.merge(obj, generateMockBody(definitions, values))
+        }, {})
+      default:
+        return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.last(schema.allOf))
+    }
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'anyOf') ) {
+    return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.anyOf))
+  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'oneOf') ) {
+    return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.oneOf))
   }
-  // [TODO] allOf, oneOf, anyOf
   return schema
 }
 
