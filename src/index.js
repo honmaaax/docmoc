@@ -86,6 +86,7 @@ function generateMockBody(definitions, schema, brothers) {
     const mockData = _.get(schema, 'x-mock')
     return _.isArray(mockData) ? _.sample(mockData) : mockData
   } else if ( _.get(schema, 'type') === 'string' ) {
+    if ( _.has(schema, 'enum') ) return _.sample(schema.enum)
     switch (schema.format) {
       case 'date':
         return moment(chance.date()).format('YYYY-MM-DD')

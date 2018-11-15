@@ -259,6 +259,7 @@ function generateMockBody(definitions, schema, brothers) {
     const mockData = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'x-mock')
     return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(mockData) ? lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(mockData) : mockData
   } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'string' ) {
+    if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'enum') ) return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.enum)
     switch (schema.format) {
       case 'date':
         return moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DD')
