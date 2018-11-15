@@ -151,26 +151,130 @@ module.exports = require("swagger-express-middleware");
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var commander__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var commander__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(commander__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
-/* harmony import */ var bluebird__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bluebird__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(0);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
-/* harmony import */ var js_yaml__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(js_yaml__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
-/* harmony import */ var chance__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(chance__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8);
-/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(3);
-/* harmony import */ var swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(swagger_ui_express__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9);
-/* harmony import */ var swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9__);
+
+// EXTERNAL MODULE: external "commander"
+var external_commander_ = __webpack_require__(1);
+var external_commander_default = /*#__PURE__*/__webpack_require__.n(external_commander_);
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(4);
+var external_fs_default = /*#__PURE__*/__webpack_require__.n(external_fs_);
+
+// EXTERNAL MODULE: external "bluebird"
+var external_bluebird_ = __webpack_require__(2);
+var external_bluebird_default = /*#__PURE__*/__webpack_require__.n(external_bluebird_);
+
+// EXTERNAL MODULE: external "lodash"
+var external_lodash_ = __webpack_require__(0);
+var external_lodash_default = /*#__PURE__*/__webpack_require__.n(external_lodash_);
+
+// EXTERNAL MODULE: external "js-yaml"
+var external_js_yaml_ = __webpack_require__(6);
+var external_js_yaml_default = /*#__PURE__*/__webpack_require__.n(external_js_yaml_);
+
+// EXTERNAL MODULE: external "express"
+var external_express_ = __webpack_require__(8);
+var external_express_default = /*#__PURE__*/__webpack_require__.n(external_express_);
+
+// EXTERNAL MODULE: external "swagger-ui-express"
+var external_swagger_ui_express_ = __webpack_require__(3);
+var external_swagger_ui_express_default = /*#__PURE__*/__webpack_require__.n(external_swagger_ui_express_);
+
+// EXTERNAL MODULE: external "swagger-express-middleware"
+var external_swagger_express_middleware_ = __webpack_require__(9);
+var external_swagger_express_middleware_default = /*#__PURE__*/__webpack_require__.n(external_swagger_express_middleware_);
+
+// EXTERNAL MODULE: external "moment"
+var external_moment_ = __webpack_require__(5);
+var external_moment_default = /*#__PURE__*/__webpack_require__.n(external_moment_);
+
+// EXTERNAL MODULE: external "chance"
+var external_chance_ = __webpack_require__(7);
+var external_chance_default = /*#__PURE__*/__webpack_require__.n(external_chance_);
+
+// CONCATENATED MODULE: ./src/generateMockBody.js
+
+
+
+
+const chance = new external_chance_default.a()
+
+function generateMockBody(definitions, schema, brothers) {
+  if ( external_lodash_default.a.has(schema, '$ref') ) {
+    const definition = definitions[schema.$ref]
+    return generateMockBody(definitions, definition)
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'object' ) {
+    if (
+      external_lodash_default.a.has(schema.properties, 'allOf') ||
+      external_lodash_default.a.has(schema.properties, 'anyOf') ||
+      external_lodash_default.a.has(schema.properties, 'oneOf')
+    ) {
+      return generateMockBody(definitions, schema.properties)
+    } else {
+      return external_lodash_default.a.reduce(schema.properties, (obj, prop, name)=>{
+        return Object.assign({[name]: generateMockBody(definitions, prop, schema.properties)}, obj)
+      }, {})
+    }
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'array' ) {
+    const size = schema['x-mock-array-size'] || 1
+    return external_lodash_default.a.range(0, size).map(()=>{
+      return generateMockBody(definitions, schema.items)
+    })
+  } else if ( external_lodash_default.a.has(schema, 'x-mock') ) {
+    const mockData = external_lodash_default.a.get(schema, 'x-mock')
+    return external_lodash_default.a.isArray(mockData) ? external_lodash_default.a.sample(mockData) : mockData
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'string' ) {
+    if ( external_lodash_default.a.has(schema, 'enum') ) return external_lodash_default.a.sample(schema.enum)
+    switch (schema.format) {
+      case 'date':
+        return external_moment_default()(chance.date()).format('YYYY-MM-DD')
+      case 'date-time':
+        return `${external_moment_default()(chance.date()).format('YYYY-MM-DDThh:mm:ss')}Z`
+      case 'byte':
+      case 'binary':
+        return (new Buffer(chance.string(), 'binary')).toString('base64')
+      case 'email':
+        return chance.email()
+      case 'uuid':
+        return chance.guid({version: 1})
+      case 'hostname':
+        return chance.domain()
+      case 'ipv4':
+        return chance.ip()
+      case 'ipv6':
+        return chance.ipv6()
+      default:
+        return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+    }
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'number' ) {
+    return chance.floating({ min: schema.minimum, max: schema.maximum })
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'integer' ) {
+    const size = external_lodash_default.a.result(external_lodash_default.a.get(brothers, external_lodash_default.a.get(schema, 'x-mock-array-key')), 'x-mock-array-size')
+    if ( size ) {
+      return size
+    } else {
+      return chance.integer({ min: schema.minimum, max: schema.maximum })
+    }
+  } else if ( external_lodash_default.a.get(schema, 'type') === 'boolean' ) {
+    return chance.bool()
+  } else if ( external_lodash_default.a.has(schema, 'allOf') ) {
+    switch (schema.allOf[0].type) {
+      case 'object':
+        return external_lodash_default.a.reduce(schema.allOf, (obj, values)=>{
+          return external_lodash_default.a.merge(obj, generateMockBody(definitions, values))
+        }, {})
+      default:
+        return generateMockBody(definitions, external_lodash_default.a.last(schema.allOf))
+    }
+  } else if ( external_lodash_default.a.has(schema, 'anyOf') ) {
+    return generateMockBody(definitions, external_lodash_default.a.sample(schema.anyOf))
+  } else if ( external_lodash_default.a.has(schema, 'oneOf') ) {
+    return generateMockBody(definitions, external_lodash_default.a.sample(schema.oneOf))
+  }
+  return schema
+}
+
+// CONCATENATED MODULE: ./src/index.js
 
 
 
@@ -182,22 +286,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const chance = new chance__WEBPACK_IMPORTED_MODULE_6___default.a()
-const app = express__WEBPACK_IMPORTED_MODULE_7___default()()
-commander__WEBPACK_IMPORTED_MODULE_0___default.a
+const app = external_express_default()()
+external_commander_default.a
   .usage('[options] [swagger_file_path]')
   .arguments('[options] [swagger_file_path]')
   .option('-p, --port <port>', 'Change port')
   .parse(process.argv)
-const filePath = (commander__WEBPACK_IMPORTED_MODULE_0___default.a.args && commander__WEBPACK_IMPORTED_MODULE_0___default.a.args[0]) || './swagger.yml'
-const port = commander__WEBPACK_IMPORTED_MODULE_0___default.a.port || 3000
-bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_MODULE_1___default.a.readFile)(filePath, 'utf-8')
-  .then(js_yaml__WEBPACK_IMPORTED_MODULE_5___default.a.safeLoad)
+const filePath = (external_commander_default.a.args && external_commander_default.a.args[0]) || './swagger.yml'
+const port = external_commander_default.a.port || 3000
+external_bluebird_default.a.promisify(external_fs_default.a.readFile)(filePath, 'utf-8')
+  .then(external_js_yaml_default.a.safeLoad)
   .then((swaggerDocument)=>{
-    if ( !lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isObject(swaggerDocument) ) throw new Error('Invalid File')
-    app.use('/docs', swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default.a.serve, swagger_ui_express__WEBPACK_IMPORTED_MODULE_8___default.a.setup(swaggerDocument))
+    if ( !external_lodash_default.a.isObject(swaggerDocument) ) throw new Error('Invalid File')
+    app.use('/docs', external_swagger_ui_express_default.a.serve, external_swagger_ui_express_default.a.setup(swaggerDocument))
   })
-  .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default.a)(filePath, app))
+  .then(()=>external_bluebird_default.a.promisify(external_swagger_express_middleware_default.a)(filePath, app))
   .then((middleware)=>{
     app.use(
       middleware.metadata(),
@@ -241,73 +344,6 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
     })
     app.listen(port, () => console.log(`App listening on port ${port}!`))
   })
-
-function generateMockBody(definitions, schema, brothers) {
-  if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, '$ref') ) {
-    const definition = definitions[schema.$ref]
-    return generateMockBody(definitions, definition)
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'object' ) {
-    return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.reduce(schema.properties, (obj, prop, name)=>{
-      return Object.assign({[name]: generateMockBody(definitions, prop, schema.properties)}, obj)
-    }, {})
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'array' ) {
-    const size = schema['x-mock-array-size'] || 1
-    return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.range(0, size).map(()=>{
-      return generateMockBody(definitions, schema.items)
-    })
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'x-mock') ) {
-    const mockData = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'x-mock')
-    return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(mockData) ? lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(mockData) : mockData
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'string' ) {
-    if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'enum') ) return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.enum)
-    switch (schema.format) {
-      case 'date':
-        return moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DD')
-      case 'date-time':
-        return `${moment__WEBPACK_IMPORTED_MODULE_4___default()(chance.date()).format('YYYY-MM-DDThh:mm:ss')}Z`
-      case 'byte':
-      case 'binary':
-        return (new Buffer(chance.string(), 'binary')).toString('base64')
-      case 'email':
-        return chance.email()
-      case 'uuid':
-        return chance.guid({version: 1})
-      case 'hostname':
-        return chance.domain()
-      case 'ipv4':
-        return chance.ip()
-      case 'ipv6':
-        return chance.ipv6()
-      default:
-        return chance.string({pool: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
-    }
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'number' ) {
-    return chance.floating({ min: schema.minimum, max: schema.maximum })
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'integer' ) {
-    const size = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.result(lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(brothers, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'x-mock-array-key')), 'x-mock-array-size')
-    if ( size ) {
-      return size
-    } else {
-      return chance.integer({ min: schema.minimum, max: schema.maximum })
-    }
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.get(schema, 'type') === 'boolean' ) {
-    return chance.bool()
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'allOf') ) {
-    switch (schema.allOf[0].type) {
-      case 'object':
-        return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.reduce(schema.allOf, (obj, values)=>{
-          return lodash__WEBPACK_IMPORTED_MODULE_3___default.a.merge(obj, generateMockBody(definitions, values))
-        }, {})
-      default:
-        return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.last(schema.allOf))
-    }
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'anyOf') ) {
-    return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.anyOf))
-  } else if ( lodash__WEBPACK_IMPORTED_MODULE_3___default.a.has(schema, 'oneOf') ) {
-    return generateMockBody(definitions, lodash__WEBPACK_IMPORTED_MODULE_3___default.a.sample(schema.oneOf))
-  }
-  return schema
-}
 
 
 /***/ })
