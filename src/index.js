@@ -12,11 +12,12 @@ import swaggerExpressMiddleware from 'swagger-express-middleware'
 const chance = new Chance()
 const app = express()
 program
-  .usage('<swagger_file_path>')
-  .arguments('<swagger_file_path>')
+  .usage('[options] [swagger_file_path]')
+  .arguments('[options] [swagger_file_path]')
+  .option('-p, --port <port>', 'Change port')
   .parse(process.argv)
 const filePath = (program.args && program.args[0]) || './swagger.yml'
-
+const port = program.port || 3000
 Promise.promisify(fs.readFile)(filePath, 'utf-8')
   .then(yaml.safeLoad)
   .then((swaggerDocument)=>{
@@ -25,7 +26,6 @@ Promise.promisify(fs.readFile)(filePath, 'utf-8')
   })
   .then(()=>Promise.promisify(swaggerExpressMiddleware)(filePath, app))
   .then((middleware)=>{
-    console.log('middleware', middleware)
     app.use(
       middleware.metadata(),
       middleware.CORS(),
@@ -66,7 +66,7 @@ Promise.promisify(fs.readFile)(filePath, 'utf-8')
     app.get('/', (req, res) => {
       res.send('Hello!')
     })
-    app.listen(3000, () => console.log('App listening on port 3000!'))
+    app.listen(port, () => console.log(`App listening on port ${port}!`))
   })
 
 function generateMockBody(definitions, schema, brothers) {

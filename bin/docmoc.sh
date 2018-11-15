@@ -185,11 +185,12 @@ __webpack_require__.r(__webpack_exports__);
 const chance = new chance__WEBPACK_IMPORTED_MODULE_6___default.a()
 const app = express__WEBPACK_IMPORTED_MODULE_7___default()()
 commander__WEBPACK_IMPORTED_MODULE_0___default.a
-  .usage('<swagger_file_path>')
-  .arguments('<swagger_file_path>')
+  .usage('[options] [swagger_file_path]')
+  .arguments('[options] [swagger_file_path]')
+  .option('-p, --port <port>', 'Change port')
   .parse(process.argv)
 const filePath = (commander__WEBPACK_IMPORTED_MODULE_0___default.a.args && commander__WEBPACK_IMPORTED_MODULE_0___default.a.args[0]) || './swagger.yml'
-
+const port = commander__WEBPACK_IMPORTED_MODULE_0___default.a.port || 3000
 bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_MODULE_1___default.a.readFile)(filePath, 'utf-8')
   .then(js_yaml__WEBPACK_IMPORTED_MODULE_5___default.a.safeLoad)
   .then((swaggerDocument)=>{
@@ -198,7 +199,6 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
   })
   .then(()=>bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(swagger_express_middleware__WEBPACK_IMPORTED_MODULE_9___default.a)(filePath, app))
   .then((middleware)=>{
-    console.log('middleware', middleware)
     app.use(
       middleware.metadata(),
       middleware.CORS(),
@@ -239,7 +239,7 @@ bluebird__WEBPACK_IMPORTED_MODULE_2___default.a.promisify(fs__WEBPACK_IMPORTED_M
     app.get('/', (req, res) => {
       res.send('Hello!')
     })
-    app.listen(3000, () => console.log('App listening on port 3000!'))
+    app.listen(port, () => console.log(`App listening on port ${port}!`))
   })
 
 function generateMockBody(definitions, schema, brothers) {
