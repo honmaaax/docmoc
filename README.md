@@ -38,9 +38,8 @@ Documentation and Mock API Server for Swagger
 
 If you set `x-mock` property, the API responds a specified value in JSON.
 
-**swagger.yml**
-
 ```yaml
+# swagger.yml
 type: object
 properties:
   foo:
@@ -49,8 +48,6 @@ properties:
   bar:
     type: string
 ```
-
-**Response**
 
 ```json
 {
@@ -61,9 +58,8 @@ properties:
 
 If you set an **array** to `x-mock` property, the API responds a randomly sampled value in JSON.
 
-**swagger.yml**
-
 ```yaml
+# swagger.yml
 type: object
 properties:
   foo:
@@ -75,8 +71,6 @@ properties:
   bar:
     type: integer
 ```
-
-**Response**
 
 ```json
 {
@@ -90,9 +84,8 @@ properties:
 
 If you set `x-mock-array-size` property, the API responds an array that has specified length elements.
 
-**swagger.yml**
-
 ```yaml
+# swagger.yml
 type: array
 items:
   type: object
@@ -105,8 +98,6 @@ items:
       maximum: 99
 x-mock-array-size: 3
 ```
-
-**Response**
 
 ```json
 [
@@ -130,9 +121,8 @@ x-mock-array-size: 3
 
 If you set `x-mock-array-key` property, the API responds a value in `x-mock-array-size` that is specified at the key.
 
-**swagger.yml**
-
 ```yaml
+# swagger.yml
 type: object
 properties:
   total:
@@ -151,8 +141,6 @@ properties:
           maximum: 99
     x-mock-array-size: 3
 ```
-
-**Response**
 
 ```json
 {
