@@ -9,6 +9,7 @@ Documentation and Mock API Server for Swagger
 * Respond random mock data
 * Respond specified mock data
 * Respond a specified length mock array
+* Validate API request based on Swagger
 
 
 
@@ -36,7 +37,7 @@ Documentation and Mock API Server for Swagger
 ### x-mock
 `String|Number|Boolean|Array`
 
-If you set `x-mock` property, the API responds a specified value in JSON.
+If you set `x-mock` property, the API will respond a specified value in JSON.
 
 ```yaml
 # swagger.yml
@@ -56,7 +57,7 @@ properties:
 }
 ```
 
-If you set an **array** to `x-mock` property, the API responds a randomly sampled value in JSON.
+If you set an **array** to `x-mock` property, the API will respond a randomly sampled value in JSON.
 
 ```yaml
 # swagger.yml
@@ -82,7 +83,7 @@ properties:
 ### x-mock-array-size
 `Integer`
 
-If you set `x-mock-array-size` property, the API responds an array that has specified length elements.
+If you set `x-mock-array-size` property, the API will respond an array that has specified length elements.
 
 ```yaml
 # swagger.yml
@@ -119,7 +120,7 @@ x-mock-array-size: 3
 ### x-mock-array-key
 `String`
 
-If you set `x-mock-array-key` property, the API responds a value in `x-mock-array-size` that is specified at the key.
+If you set `x-mock-array-key` property, the API will respond a value in `x-mock-array-size` that is specified at the key.
 
 ```yaml
 # swagger.yml
